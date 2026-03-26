@@ -12,6 +12,11 @@ import { toHttpState, HttpState } from '../../core/api/http-state';
 })
 export class LoginPageComponent {
   protected readonly apiState = signal<HttpState<unknown>>({ loading: false });
+  protected readonly loginState = signal<HttpState<void>>({ loading: false });
+
+  // Minimal default for demo/preview (can be edited in UI)
+  protected email = signal<string>('engineer@example.com');
+  protected password = signal<string>('password');
 
   constructor(
     private readonly auth: AuthService,
@@ -20,8 +25,12 @@ export class LoginPageComponent {
   ) {}
 
   protected login(): void {
-    this.auth.loginWithDemoUser();
-    this.router.navigateByUrl('/');
+    const stateSetter = (patch: Partial<HttpState<void>>) =>
+      this.loginState.update((s) => ({ ...s, ...patch }));
+
+    toHttpState(this.auth.login(this.email(), this.password()), stateSetter).subscribe({
+      next: () => this.router.navigateByUrl('/'),
+    });
   }
 
   protected checkBackend(): void {
