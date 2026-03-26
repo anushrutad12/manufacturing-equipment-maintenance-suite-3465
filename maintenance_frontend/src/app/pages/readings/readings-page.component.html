@@ -1,0 +1,118 @@
+<div class="grid" style="gap: 16px;">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="h1">Readings</div>
+        <div class="muted" style="font-size: 13px;">Log sensor/manual readings and track drift.</div>
+      </div>
+      <div class="actions">
+        <span class="pill">Manual entry</span>
+      </div>
+    </div>
+
+    <div class="card-body grid cols-3">
+      <div class="field">
+        <div class="label">Equipment</div>
+        <select class="select" [ngModel]="form().equipmentId" (ngModelChange)="onEquipmentChange($event)">
+          @for (eq of (equipmentState().data ?? []); track eq.id) {
+            <option [value]="eq.id">{{ eq.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="label">Timestamp</div>
+        <input class="input" type="datetime-local" [ngModel]="form().timestamp" (ngModelChange)="onTimestampChange($event)" />
+      </div>
+
+      <div class="field">
+        <div class="label">Notes</div>
+        <input class="input" [ngModel]="form().notes" (ngModelChange)="onNotesChange($event)" placeholder="Optional notes" />
+      </div>
+
+      <div class="field">
+        <div class="label">Temperature (°C)</div>
+        <input class="input" type="number" [ngModel]="form().temperatureC" (ngModelChange)="onTemperatureChange($event)" />
+      </div>
+
+      <div class="field">
+        <div class="label">Vibration (mm/s)</div>
+        <input class="input" type="number" [ngModel]="form().vibrationMmS" (ngModelChange)="onVibrationChange($event)" />
+      </div>
+
+      <div class="field">
+        <div class="label">Runtime (hours)</div>
+        <input class="input" type="number" [ngModel]="form().runtimeHours" (ngModelChange)="onRuntimeChange($event)" />
+      </div>
+
+      <div class="field" style="grid-column: 1 / -1;">
+        <div class="actions" style="justify-content:flex-end;">
+          <button class="btn primary" (click)="submit()" [disabled]="!canSubmit()">Log reading</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="h1">Recent readings</div>
+        <div class="muted" style="font-size: 13px;">Filter by equipment and review recent values.</div>
+      </div>
+      <div class="actions">
+        <select class="select" [ngModel]="selectedEquipmentId()" (ngModelChange)="selectedEquipmentId.set($event); refreshReadings();">
+          <option value="all">All equipment</option>
+          @for (eq of (equipmentState().data ?? []); track eq.id) {
+            <option [value]="eq.id">{{ eq.name }}</option>
+          }
+        </select>
+        <button class="btn" (click)="refreshReadings()">Refresh</button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      @if (readingsState().loading) {
+        <div class="banner" style="display:flex; align-items:center; gap:10px; margin-bottom: 12px;">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="muted">Loading readings…</span>
+        </div>
+      }
+
+      @if (readingsState().error) {
+        <div class="banner error" style="margin-bottom: 12px;">
+          {{ readingsState().error }}
+        </div>
+      }
+
+      <table class="table" aria-label="Readings table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Equipment</th>
+            <th>Temp (°C)</th>
+            <th>Vibration</th>
+            <th>Runtime</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of (readingsState().data ?? []); track r.id) {
+            <tr>
+              <td>{{ r.timestamp }}</td>
+              <td>{{ r.equipmentId }}</td>
+              <td>{{ r.temperatureC ?? '—' }}</td>
+              <td>{{ r.vibrationMmS ?? '—' }}</td>
+              <td>{{ r.runtimeHours ?? '—' }}</td>
+              <td>{{ r.notes ?? '—' }}</td>
+            </tr>
+          }
+          @if ((readingsState().data?.length ?? 0) === 0) {
+            <tr>
+              <td colspan="6" class="muted">No readings logged yet.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

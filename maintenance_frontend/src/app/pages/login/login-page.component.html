@@ -1,0 +1,42 @@
+<div class="wrap">
+  <div class="panel card">
+    <div class="panel-head">
+      <div>
+        <div class="title">Sign in</div>
+        <div class="muted sub">Predictive Maintenance Suite</div>
+      </div>
+      <span class="pill primary">Ocean Professional</span>
+    </div>
+
+    <div class="panel-body">
+      <div class="banner">
+        <div class="muted">
+          Demo auth is enabled. For API calls, set <b>VITE_API_BASE_URL</b> (e.g. backend URL ending with <b>:3001</b>).
+        </div>
+      </div>
+
+      @if (apiState().error) {
+        <div class="banner error">
+          <div><b>Backend check failed:</b> {{ apiState().error }}</div>
+        </div>
+      }
+
+      <div class="actions-row">
+        <button class="btn primary" (click)="login()">Continue (Demo Login)</button>
+
+        <button class="btn" (click)="checkBackend()" [disabled]="apiState().loading">
+          @if (apiState().loading) {
+            <span class="spinner" aria-hidden="true"></span>
+          }
+          <span>Test backend connection</span>
+        </button>
+      </div>
+
+      @if (apiState().data) {
+        <div class="banner success">
+          <b>Backend OK.</b> Health endpoint responded.
+        </div>
+      }
+    </div>
+  </div>
+</div>

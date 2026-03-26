@@ -1,0 +1,132 @@
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="h1">Work Orders</div>
+      <div class="muted" style="font-size: 13px;">Create, prioritize, and close maintenance tickets.</div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" (click)="openCreate()">New work order</button>
+      <button class="btn" (click)="refresh()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    @if (workOrdersState().loading) {
+      <div class="banner" style="display:flex; align-items:center; gap:10px; margin-bottom: 12px;">
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="muted">Loading work orders…</span>
+      </div>
+    }
+
+    @if (workOrdersState().error) {
+      <div class="banner error" style="margin-bottom: 12px;">{{ workOrdersState().error }}</div>
+    }
+
+    <table class="table" aria-label="Work orders table">
+      <thead>
+        <tr>
+          <th>Created</th>
+          <th>Equipment</th>
+          <th>Title</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th style="width: 22%;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (wo of (workOrdersState().data ?? []); track wo.id) {
+          <tr>
+            <td>{{ wo.createdAt }}</td>
+            <td>{{ wo.equipmentId }}</td>
+            <td>
+              <b>{{ wo.title }}</b>
+              <div class="muted" style="font-size: 12px;">{{ wo.description ?? '' }}</div>
+            </td>
+            <td><span class="pill amber">{{ wo.priority }}</span></td>
+            <td>
+              <span class="pill" [class.primary]="statusPill(wo.status) === 'primary'" [class.amber]="statusPill(wo.status) === 'amber'">
+                {{ wo.status }}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button class="btn" (click)="openEdit(wo)">Edit</button>
+                <button class="btn" (click)="setStatus(wo, 'In Progress')">Start</button>
+                <button class="btn" (click)="setStatus(wo, 'Closed')">Close</button>
+              </div>
+            </td>
+          </tr>
+        }
+        @if ((workOrdersState().data?.length ?? 0) === 0) {
+          <tr>
+            <td colspan="6" class="muted">No work orders. Create one from an alert or inspection.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (isModalOpen()) {
+  <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Work order modal">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">{{ editingId() ? 'Edit work order' : 'Create work order' }}</div>
+        <button class="btn ghost" (click)="closeModal()">Close</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="grid cols-2">
+          <div class="field">
+            <div class="label">Equipment</div>
+            <select class="select" [(ngModel)]="form.equipmentId">
+              @for (eq of (equipmentState().data ?? []); track eq.id) {
+                <option [value]="eq.id">{{ eq.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="label">Priority</div>
+            <select class="select" [(ngModel)]="form.priority">
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+
+          <div class="field" style="grid-column: 1 / -1;">
+            <div class="label">Title</div>
+            <input class="input" [(ngModel)]="form.title" placeholder="e.g., Replace worn belt" />
+          </div>
+
+          <div class="field" style="grid-column: 1 / -1;">
+            <div class="label">Description</div>
+            <textarea class="textarea" rows="4" [(ngModel)]="form.description"></textarea>
+          </div>
+
+          <div class="field">
+            <div class="label">Status</div>
+            <select class="select" [(ngModel)]="form.status">
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="On Hold">On Hold</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="label">Assigned to</div>
+            <input class="input" [(ngModel)]="form.assignedTo" placeholder="Optional assignee" />
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn" (click)="closeModal()">Cancel</button>
+        <button class="btn primary" (click)="save()">Save</button>
+      </div>
+    </div>
+  </div>
+}

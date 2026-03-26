@@ -1,0 +1,49 @@
+<div class="grid" style="gap: 16px;">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="h1">Reports</div>
+        <div class="muted" style="font-size: 13px;">KPIs and operational overview.</div>
+      </div>
+      <div class="actions">
+        <button class="btn" (click)="checkBackend()" [disabled]="healthState().loading">
+          @if (healthState().loading) { <span class="spinner" aria-hidden="true"></span> }
+          <span>Check backend</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      @if (healthState().error) {
+        <div class="banner error" style="margin-bottom: 12px;">
+          {{ healthState().error }}
+          <div class="muted" style="margin-top: 6px;">
+            Ensure <b>VITE_API_BASE_URL</b> is set to the backend base URL (e.g., https://...:3001).
+          </div>
+        </div>
+      }
+
+      @if (healthState().data) {
+        <div class="banner success" style="margin-bottom: 12px;">
+          Backend is reachable.
+        </div>
+      }
+
+      <div class="grid cols-3">
+        @for (kpi of kpis(); track kpi.label) {
+          <div class="card">
+            <div class="card-body">
+              <div class="muted" style="font-size: 12px;">{{ kpi.label }}</div>
+              <div style="font-size: 26px; font-weight: 850; margin-top: 6px;">{{ kpi.value }}</div>
+              <div class="muted" style="font-size: 12px; margin-top: 6px;">{{ kpi.hint ?? '' }}</div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="banner" style="margin-top: 14px;">
+        <b>Note:</b> KPI values will populate from backend reporting endpoints once implemented.
+      </div>
+    </div>
+  </div>
+</div>

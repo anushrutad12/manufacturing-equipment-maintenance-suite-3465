@@ -1,0 +1,59 @@
+<div class="layout" [class.collapsed]="isCollapsed()">
+  <aside class="sidebar card">
+    <div class="brand">
+      <div class="logo">PM</div>
+      <div class="brand-text">
+        <div class="brand-title">Predictive Maintenance</div>
+        <div class="brand-sub muted">Ocean Professional</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      @for (item of navItems; track item.path) {
+        <a class="nav-link"
+           [routerLink]="item.path"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: item.path === '/equipment' }">
+          <span class="dot"></span>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user">
+        <div class="avatar">{{ initials() }}</div>
+        <div class="user-meta">
+          <div class="user-name">Engineer</div>
+          <div class="user-sub muted">Authenticated</div>
+        </div>
+      </div>
+
+      <button class="btn ghost" (click)="logout()">Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="header card">
+      <div class="header-left">
+        <button class="btn ghost" (click)="toggleCollapse()">
+          {{ isCollapsed() ? 'Expand' : 'Collapse' }}
+        </button>
+        <div class="sep"></div>
+        <div class="headline">
+          <div class="title">Operations Dashboard</div>
+          <div class="subtitle muted">Track equipment health and maintenance workflows</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <span class="pill primary">Blue primary</span>
+        <span class="pill amber">Amber accent</span>
+      </div>
+    </header>
+
+    <section class="content">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

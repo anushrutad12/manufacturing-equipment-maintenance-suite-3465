@@ -1,0 +1,114 @@
+<div class="grid" style="gap: 16px;">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="h1">Equipment</div>
+        <div class="muted" style="font-size: 13px;">Register and manage manufacturing assets.</div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" (click)="openCreate()">Add equipment</button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      @if (listState().error) {
+        <div class="banner error" style="margin-bottom: 12px;">
+          {{ listState().error }}
+        </div>
+      }
+
+      @if (listState().loading) {
+        <div class="banner" style="display:flex; align-items:center; gap:10px; margin-bottom: 12px;">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="muted">Loading equipment…</span>
+        </div>
+      }
+
+      <table class="table" aria-label="Equipment table">
+        <thead>
+          <tr>
+            <th style="width: 22%;">Name</th>
+            <th style="width: 16%;">Location</th>
+            <th style="width: 16%;">Model</th>
+            <th style="width: 18%;">Serial</th>
+            <th style="width: 12%;">Status</th>
+            <th style="width: 16%;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of (listState().data ?? []); track row.id) {
+            <tr>
+              <td><b>{{ row.name }}</b></td>
+              <td>{{ row.location ?? '—' }}</td>
+              <td>{{ row.model ?? '—' }}</td>
+              <td>{{ row.serialNumber ?? '—' }}</td>
+              <td>
+                <span class="pill" [class.primary]="row.isActive" [class.red]="!row.isActive">
+                  {{ row.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions">
+                  <button class="btn" (click)="openEdit(row)">Edit</button>
+                  <button class="btn danger" (click)="remove(row.id)">Delete</button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if ((listState().data?.length ?? 0) === 0) {
+            <tr>
+              <td colspan="6" class="muted">No equipment yet. Add your first asset.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+@if (isModalOpen()) {
+  <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Equipment modal">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">{{ editingId() ? 'Edit equipment' : 'Add equipment' }}</div>
+        <button class="btn ghost" (click)="closeModal()">Close</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="grid cols-2">
+          <div class="field">
+            <div class="label">Name</div>
+            <input class="input" [(ngModel)]="form.name" placeholder="e.g., Press #2" />
+          </div>
+
+          <div class="field">
+            <div class="label">Location</div>
+            <input class="input" [(ngModel)]="form.location" placeholder="e.g., Line A" />
+          </div>
+
+          <div class="field">
+            <div class="label">Model</div>
+            <input class="input" [(ngModel)]="form.model" placeholder="Model" />
+          </div>
+
+          <div class="field">
+            <div class="label">Serial Number</div>
+            <input class="input" [(ngModel)]="form.serialNumber" placeholder="Serial" />
+          </div>
+
+          <div class="field" style="grid-column: 1 / -1;">
+            <label style="display:flex; gap:10px; align-items:center;">
+              <input type="checkbox" [(ngModel)]="form.isActive" />
+              <span class="muted">Active asset</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn" (click)="closeModal()">Cancel</button>
+        <button class="btn primary" (click)="save()">Save</button>
+      </div>
+    </div>
+  </div>
+}
