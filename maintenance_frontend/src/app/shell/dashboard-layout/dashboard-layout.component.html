@@ -1,5 +1,33 @@
 <div class="layout" [class.collapsed]="isCollapsed()">
-  <aside class="sidebar card">
+  <!-- Top centered glass pill header (matches extracted screenshot pattern) -->
+  <header class="topbar">
+    <nav class="nav-pill" aria-label="Primary navigation">
+      <div class="nav-brand">
+        <span class="nav-badge">PM</span>
+        <span class="nav-brand-text">Predictive Maintenance</span>
+      </div>
+
+      <div class="nav-links" role="navigation" aria-label="Sections">
+        @for (item of navItems; track item.path) {
+          <a class="nav-link-pill"
+             [routerLink]="item.path"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: item.path === '/equipment' }">
+            {{ item.label }}
+          </a>
+        }
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn primary" (click)="toggleCollapse()">
+          {{ isCollapsed() ? 'Expand' : 'Collapse' }}
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Keep sidebar + main content for existing dashboard flows -->
+  <aside class="sidebar card" aria-label="Sidebar">
     <div class="brand">
       <div class="logo">PM</div>
       <div class="brand-text">
@@ -29,17 +57,13 @@
         </div>
       </div>
 
-      <button class="btn ghost" (click)="logout()">Log out</button>
+      <button class="btn" (click)="logout()">Log out</button>
     </div>
   </aside>
 
   <main class="main">
     <header class="header card">
       <div class="header-left">
-        <button class="btn ghost" (click)="toggleCollapse()">
-          {{ isCollapsed() ? 'Expand' : 'Collapse' }}
-        </button>
-        <div class="sep"></div>
         <div class="headline">
           <div class="title">Operations Dashboard</div>
           <div class="subtitle muted">Track equipment health and maintenance workflows</div>
@@ -47,8 +71,8 @@
       </div>
 
       <div class="header-right">
-        <span class="pill primary">Blue primary</span>
-        <span class="pill amber">Amber accent</span>
+        <span class="pill primary">Aurora</span>
+        <span class="pill amber">Glass</span>
       </div>
     </header>
 

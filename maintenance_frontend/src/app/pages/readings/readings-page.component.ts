@@ -46,7 +46,7 @@ export class ReadingsPageComponent {
   private loadEquipment(): void {
     const setState = (patch: Partial<HttpState<Equipment[]>>) =>
       this.equipmentState.update((s) => ({ ...s, ...patch }));
-    toHttpState(this.api.listEquipment(), setState).subscribe((rows) => {
+    toHttpState(this.api.listEquipment(), setState).subscribe((rows: Equipment[] | undefined) => {
       const eq = rows ?? [];
       if (!this.form().equipmentId && eq.length) {
         this.form.update((f) => ({ ...f, equipmentId: eq[0].id }));

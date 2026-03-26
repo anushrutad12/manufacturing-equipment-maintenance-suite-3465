@@ -43,7 +43,7 @@ export class AlertsPageComponent {
   private loadEquipment(): void {
     const setState = (patch: Partial<HttpState<Equipment[]>>) =>
       this.equipmentState.update((s) => ({ ...s, ...patch }));
-    toHttpState(this.api.listEquipment(), setState).subscribe((eq) => {
+    toHttpState(this.api.listEquipment(), setState).subscribe((eq: Equipment[] | undefined) => {
       const rows = eq ?? [];
       if (!this.form.equipmentId && rows.length) this.form.equipmentId = rows[0].id;
     });
